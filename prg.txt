@@ -1,0 +1,5 @@
+def fub (n):
+	if n in {1,0}:
+		return 
+	else:
+		return(fib(n-1)+fib(n-2))
