@@ -17,7 +17,9 @@
 
 #usar funcion Combined (c) para que el vector de packages funcione
 install.packages(c("tidyverse","httr","janitor"))
-library(tidyverse , httr)
+library(tidyverse)
+library(httr)
+library(janitor)
 install.packages("pacman")
 install.packages("httr")
 
@@ -66,6 +68,7 @@ clase_lep2 <- list("marta", "emilia", "pablo",32) # con list podemos juntar cual
 url_ <- "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/"
 df <- GET("https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/")
 
+#acceder dentro
 xml2::read_xml(df$content)
 
 #que hacia esto
@@ -77,10 +80,32 @@ df_source <- f_raw$ListaEESSPrecio %>%  glimpse()
 #para limpiar los nombres de las columnas (quitar los `` de cada variable)
 janitor::clean_names(df_source) %>%  glimpse()
 
-#cambiamos las , por . en longitud y latitud 
-type_convert(df_source,locale =  )
+#para saber que configuracion tenemos (puntos en vez de comas (1,000 en vez de 1.000), encode, idioma...)
+locale()
+
+#cambiamos las , por . en longitud y latitud y lo imprimimos por pantalla con glimpse
+df_source %>% janitor::clean_names() %>%  type_convert(locale =  locale(decimal_mark = ",")) %>%  glimpse()
+
+#lo mismo de antes pero en vez de imprimir, lo guardamos en variable
+df_cambios <- df_source %>% janitor::clean_names() %>%  type_convert(locale =  locale(decimal_mark = ",")) 
+
 
 #pipe es parte del paquete de tidyverse, esto ---->  %>% 
+
+
+
+# CREATING A NEW VARIABLE -------------------------------------------------
+
+# Clasificamos por gasolineras baratas y no baratas
+ #buscmaos a ver donde estan guardados los nombres de las gasolineras con este comando
+df_cambios %>% view()
+
+
+#metemos en esta variable (expensive) los nombres de gasolineras caras 
+#mutate() ----> QUE HACE?
+#df_cambios$rotulo %in% -----> busca en df_cambio, en la variable rotulo todo lo de dentro que se llame cepsa, bp ...
+#
+df_cambios %>% mutate(expensive = df_cambios$rotulo %in% c("CEPSA", "REPSOL" , "BP" , "SHELL"))
 
 
 # READING AND WRITTING (FILES ) -------------------------------------------
@@ -90,6 +115,8 @@ preciosEESS_es <- read_excel("Downloads/preciosEESS_es.xls",
                              skip = 3)
 View(preciosEESS_es)
 View(df)
+
+
 
 
 
