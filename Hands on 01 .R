@@ -118,7 +118,32 @@ df_low %>% select(precio_gasoleo_a, idccaa, rotulo, expensive) %>% drop_na() %>%
 #Crear nueva columna que identifique el idccaa y ponga su nombre
 df_low %>% view()
 ds21937899 <- df_low  
+ccaa <- c("Andalucía",
+         "Aragón",
+         "Principado de Asturias",
+         "Illes Balears",
+          "Canarias",
+         "Cantabria",
+          "Castilla y León",
+          "Castilla-La Mancha",
+          "Cataluña",
+        "Comunitat Valenciana",
+          "Extremadura",
+          "Galicia",
+          "Comunidad de Madrid",
+          "Región de Murcia",
+          "Comunidad Foral de Navarra",
+          "País Vasco",
+         "La Rioja",
+          "Ciudad Autónoma de Ceuta",
+          "Ciudad Autónoma de Melilla")
 
+idccaa <- c("01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19")
+
+df_provincias <- data.frame(ccaa,idccaa)
+
+ds21937899 <- merge(ds21937899,df_provincias)
+ds21937899 %>% view()
 # READING AND WRITTING (FILES ) -------------------------------------------
 
 
