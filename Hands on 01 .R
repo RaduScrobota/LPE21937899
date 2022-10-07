@@ -102,13 +102,27 @@ df_cambios %>% view()
 
 
 #metemos en esta variable (expensive) los nombres de gasolineras caras 
-#mutate() ----> QUE HACE?
+#mutate() ----> crea columna nueva
 #df_cambios$rotulo %in% -----> busca en df_cambio, en la variable rotulo todo lo de dentro que se llame cepsa, bp ...
-#
-df_cambios %>% mutate(expensive = df_cambios$rotulo %in% c("CEPSA", "REPSOL" , "BP" , "SHELL"))
+#definimos DF donde tenemos la variable expensive
+df_low <- df_cambios %>% mutate(expensive = !rotulo %in% c("CEPSA", "REPSOL" , "BP" , "SHELL"))
 
+
+# Cual precio medio del gasoleo en las CCAA
+#seleccionamos primero de que DF cogemos la info, luego lo que nos interesa con select()
+# $ busca nombre de la variable en el DF
+# %>%  selecciona/filtra dentro de lo que pusimos antes (dentro de df_low selecciono solo las cogidas, despues borro dentro solo de esas los nulos y agrupo dentro de idccaa)
+df_low %>% select(precio_gasoleo_a, idccaa, rotulo, expensive) %>% drop_na() %>% group_by(idccaa, expensive) %>%  summarise(mean(precio_gasoleo_a)) %>% view()
+
+
+#Crear nueva columna que identifique el idccaa y ponga su nombre
+df_low %>% view()
+ds21937899 <- df_low  
 
 # READING AND WRITTING (FILES ) -------------------------------------------
+
+
+#poner ds21937899
 
 library(readxl)
 preciosEESS_es <- read_excel("Downloads/preciosEESS_es.xls", 
