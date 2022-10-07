@@ -115,9 +115,15 @@ df_low <- df_cambios %>% mutate(expensive = !rotulo %in% c("CEPSA", "REPSOL" , "
 df_low %>% select(precio_gasoleo_a, idccaa, rotulo, expensive) %>% drop_na() %>% group_by(idccaa, expensive) %>%  summarise(mean(precio_gasoleo_a)) %>% view()
 
 
+
+# EJERCICIO CASA ----------------------------------------------------------
+
 #Crear nueva columna que identifique el idccaa y ponga su nombre
 df_low %>% view()
-ds21937899 <- df_low  
+
+ds21937899_33 <- df_low
+ds21937899_34 <- df_low  
+
 ccaa <- c("Andalucía",
          "Aragón",
          "Principado de Asturias",
@@ -142,12 +148,11 @@ idccaa <- c("01","02","03","04","05","06","07","08","09","10","11","12","13","14
 
 df_provincias <- data.frame(ccaa,idccaa)
 
-ds21937899 <- merge(ds21937899,df_provincias)
-ds21937899 %>% view()
+ds21937899_34 <- merge(ds21937899_34,df_provincias)
+ds21937899_34 %>% view()
+
+
 # READING AND WRITTING (FILES ) -------------------------------------------
-
-
-#poner ds21937899
 
 library(readxl)
 preciosEESS_es <- read_excel("Downloads/preciosEESS_es.xls", 
