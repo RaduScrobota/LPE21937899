@@ -152,6 +152,11 @@ ds21937899_34 <- merge(ds21937899_34,df_provincias)
 ds21937899_34 %>% view()
 
 
+#Pasamos a un csv los datos sacados con 33 y 34 columnas
+write.csv(ds21937899_33, "ds21937899_33.csv")
+write.csv(ds21937899_34, "ds21937899_34.csv")
+
+
 # HTTPS GITHUB ------------------------------------------------------------
 
 # https://github.com/RaduScrobota/LPE21937899.git
