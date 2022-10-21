@@ -20,9 +20,17 @@ install.packages(c("tidyverse","httr","janitor"))
 library(tidyverse)
 library(httr)
 library(janitor)
+library(leaflet)
+library(sparklyr)
+library(dplyr)
+library(tidyverse)
+library(stringr)
+library(readxl)
 install.packages("pacman")
 install.packages("httr")
-
+install.packages("leaflet")
+#para instalar todos los packages a al vez
+pacman::p_load(httr, tidyverse, leaflet, janitor, readr, sparklyr)
 # GIT COMMANDS ------------------------------------------------------------
 
 # git status
@@ -52,6 +60,13 @@ install.packages("httr")
 # where 
 # which
 
+#comandos kaggle ------
+# Entrar primero en carpeta de Lpe para descargar todo ahi o crear carpeta para kaggle a parte
+# Kaggle -d download id 
+# kaggle datasets list
+# kaggle datasets list -s 'titanic'
+# kaggle datasets download -d 'broaniki/titanic'
+
 
 # BASIC OPERATORS ---------------------------------------------------------
 
@@ -66,6 +81,7 @@ clase_lep2 <- list("marta", "emilia", "pablo",32) # con list podemos juntar cual
 # GETTING DATA FROM INTERNET ----------------------------------------------
 
 url_ <- "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/"
+
 df <- GET("https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/")
 
 #acceder dentro
@@ -155,6 +171,42 @@ ds21937899_34 %>% view()
 #Pasamos a un csv los datos sacados con 33 y 34 columnas
 write.csv(ds21937899_33, "ds21937899_33.csv")
 write.csv(ds21937899_34, "ds21937899_34.csv")
+
+
+
+
+
+
+
+# Obtener gasolineras de España segun baratas o caras-----------------------------------
+
+dataset <- df_cambios
+dataset %>%  view()
+
+# Albacete
+
+#Gasoleo A. Top 10 mas caras
+dataset  %>% select(rotulo , latitud , longitud_wgs84 , precio_gasoleo_a , localidad , direccion) %>%
+  top_n(10, precio_gasoleo_a ) %>% 
+  leaflet() %>%  addTiles() %>% 
+  addCircleMarkers(lng= ~longitud_wgs84 ,lat= ~latitud , popup= ~rotulo , label= ~precio_gasoleo_a)
+
+#Gasoleo A. Top 20 m?s baratas
+dataset %>%  select(rotulo, latitud, longitud_wgs84, precio_gasoleo_a, localidad, direccion) %>%
+  top_n(-20, precio_gasoleo_a) %>%
+  leaflet() %>%  addTiles() %>%
+  addCircleMarkers(lng=~longitud_wgs84, lat = ~latitud, popup = ~rotulo, label = ~precio_gasoleo_a)
+
+# EJERCICIO CLASE GASOLINERAS BARATAS ALBACETE  --------------------------------------------------------
+
+#Obtener gaoslineras mas baratas de la provincia de Albacete
+
+#Gasoleo A. Top 20 más baratas de Albacete
+dataset %>% filter(provincia == "ALBACETE")%>%  select(rotulo, latitud, longitud_wgs84, precio_gasoleo_a, localidad, direccion) %>%
+  top_n(-20, precio_gasoleo_a) %>%
+  leaflet() %>%  addTiles() %>%
+  addCircleMarkers(lng=~longitud_wgs84, lat = ~latitud, popup = ~rotulo, label = ~precio_gasoleo_a)
+
 
 
 # HTTPS GITHUB ------------------------------------------------------------
