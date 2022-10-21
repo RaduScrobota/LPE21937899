@@ -29,17 +29,38 @@ df <- happy %>%  as_tibble()
 levels(df$happy)
 
 #dar la vuelta a los levels | %<>% esto es de magrittr 
-# con el 
+# con el <> lo que hacemos es generar a parte una nueva columna
+#  igual en la que hacemos todos los cambios que queremos y despues cambiamos 
+# la columna que hemos  hecho cambios por la que esta en el df
 df %<>% mutate(happy=fct_rev(happy))
-#df %>%  mutate(marta_reverse = fct_rev(happy)) %>%  view() ---> lo mismo 
+#df %>%  mutate(marta_reverse = fct_rev(happy)) %>%  view() ---> lo mismo pero de la forma tradicional
 
 #OUTCOME VARIABLES: HAPPINESS ---------------------------------------
 #estas lineas son para graficar solo
-df %>% ggplot() + geom_bar(aes(happy, fill=happy) + 
-                             theme(axis.title.x  = element_blank(), legend.background = )
+df %>% ggplot() + geom_bar(aes(happy, fill=happy)) + 
+                             theme(axis.title.x  = element_blank(), legend.position  ="none" )
+
+#Frecuencia de variable happy
+df %>%  count(happy)
+
+#quitar nulos de la variable Happy
+df %<>%  select(happy:health) %>%  view()
+df %<>%  filter(!is.na(happy))
+df %>%  count(happy)
+
+
+# HAPPINESSS AND GENDER ---------------------------------------------------
+df %>%  ggplot(aes(sex, fill=happy))+geom_bar(position = "fill")
+
+# HAPPINESS AND MONEY -----------------------------------------------------
+df %>%  ggplot(aes(finrela, fill=happy))+geom_bar(position = "fill")
  
+# HAPPINESS AND HEALTH ----------------------------------------------------
+df %>%  ggplot(aes(health, fill=happy))+geom_bar(position = "fill")
 
-
+# DICHOTOMUS MARRIED / NOT VARIABLE ---------------------------------------
+df %>% mutate (married = if_else(marital=="married", "yes","no")) %>% 
+  mutate(married=as_factor(married)) %>% view()
 
 
 
