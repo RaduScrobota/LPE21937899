@@ -13,6 +13,13 @@
 ## control + shift + r = nueva sección
 ## control + shift + m = 
 
+
+# LOADING LIBS CON PACMAN  ------------------------------------------------
+
+if(!require("pacman")) install.packages("pacman")
+p_load(tidyverse, magrittr, janitor, lubridate, httr, readxl)
+
+
 # LOADING LIBS ------------------------------------------------------------
 
 #usar funcion Combined (c) para que el vector de packages funcione
@@ -31,6 +38,7 @@ install.packages("httr")
 install.packages("leaflet")
 #para instalar todos los packages a al vez
 pacman::p_load(httr, tidyverse, leaflet, janitor, readr, sparklyr)
+
 # GIT COMMANDS ------------------------------------------------------------
 
 # git status
@@ -44,6 +52,7 @@ pacman::p_load(httr, tidyverse, leaflet, janitor, readr, sparklyr)
 # git remote add Origin URL
 # git clone URL
 # git pull
+
 
 
 # TERMINAL COMMANDS -------------------------------------------------------
@@ -60,12 +69,14 @@ pacman::p_load(httr, tidyverse, leaflet, janitor, readr, sparklyr)
 # where 
 # which
 
+
 #comandos kaggle ------
 # Entrar primero en carpeta de Lpe para descargar todo ahi o crear carpeta para kaggle a parte
 # Kaggle -d download id 
 # kaggle datasets list
 # kaggle datasets list -s 'titanic'
 # kaggle datasets download -d 'broaniki/titanic'
+
 
 
 # BASIC OPERATORS ---------------------------------------------------------
@@ -76,6 +87,7 @@ pacman::p_load(httr, tidyverse, leaflet, janitor, readr, sparklyr)
 # asignar varios elementos
 clase_lep <- c("marta", "emilia", "pablo",32) #con el 32 no funcionaria ya que deben de ser string
 clase_lep2 <- list("marta", "emilia", "pablo",32) # con list podemos juntar cualquier tipo de dato en el mismo vector
+
 
 
 # GETTING DATA FROM INTERNET ----------------------------------------------
@@ -91,7 +103,7 @@ xml2::read_xml(df$content)
 f_raw <- jsonlite::fromJSON(url_)
 
 # Glimpse = genera listado en consola  de alta potencia (como view pero mejor )
-df_source <- f_raw$ListaEESSPrecio %>%  glimpse()
+df_source <- f_raw$ListaEESSPrecio #%>%  glimpse()
 
 #para limpiar los nombres de las columnas (quitar los `` de cada variable)
 janitor::clean_names(df_source) %>%  glimpse()
@@ -100,13 +112,14 @@ janitor::clean_names(df_source) %>%  glimpse()
 locale()
 
 #cambiamos las , por . en longitud y latitud y lo imprimimos por pantalla con glimpse
-df_source %>% janitor::clean_names() %>%  type_convert(locale =  locale(decimal_mark = ",")) %>%  glimpse()
+df_source %>% janitor::clean_names() %>%  type_convert(locale =  locale(decimal_mark = ",")) #%>%  glimpse()
 
 #lo mismo de antes pero en vez de imprimir, lo guardamos en variable
 df_cambios <- df_source %>% janitor::clean_names() %>%  type_convert(locale =  locale(decimal_mark = ",")) 
 
 
 #pipe es parte del paquete de tidyverse, esto ---->  %>% 
+
 
 
 
@@ -129,6 +142,7 @@ df_low <- df_cambios %>% mutate(expensive = !rotulo %in% c("CEPSA", "REPSOL" , "
 # $ busca nombre de la variable en el DF
 # %>%  selecciona/filtra dentro de lo que pusimos antes (dentro de df_low selecciono solo las cogidas, despues borro dentro solo de esas los nulos y agrupo dentro de idccaa)
 df_low %>% select(precio_gasoleo_a, idccaa, rotulo, expensive) %>% drop_na() %>% group_by(idccaa, expensive) %>%  summarise(mean(precio_gasoleo_a)) %>% view()
+
 
 
 
@@ -178,6 +192,7 @@ write.csv(ds21937899_34, "ds21937899_34.csv")
 
 
 
+
 # Obtener gasolineras de España segun baratas o caras-----------------------------------
 
 dataset <- df_cambios
@@ -197,6 +212,7 @@ dataset %>%  select(rotulo, latitud, longitud_wgs84, precio_gasoleo_a, localidad
   leaflet() %>%  addTiles() %>%
   addCircleMarkers(lng=~longitud_wgs84, lat = ~latitud, popup = ~rotulo, label = ~precio_gasoleo_a)
 
+
 # EJERCICIO CLASE GASOLINERAS BARATAS ALBACETE  --------------------------------------------------------
 
 #Obtener gaoslineras mas baratas de la provincia de Albacete
@@ -209,9 +225,27 @@ dataset %>% filter(provincia == "ALBACETE")%>%  select(rotulo, latitud, longitud
 
 
 
+
+# EJERCICIO CASA EXPRESIONES REGULARES 04/11/2022 -------------------------
+# Debemos de sacar cuales de las gasolineras son franquicia y cuales no.
+# sacamos primeramente todas las que tengan la coletilla SL, S.L, SA o S.A 
+df_cambios %<>% tidyr::extract(rotulo, c("EXT"), "(S\\.L|S\\.A|\\bSL\\b|\\bSA\\b)", remove = F) %>% mutate( M_F = EXT %in% c("SL", "SA", "S.A", "S.L")) %>% view()
+
+
+# a continuacion segun cuales son franquicia por la coletilla, crearemos una nueva columna 
+# que nos la separe en vez de TRUE y FALSE, en MARCA y FRANQUICIA como se pide en el enunciado.
+df_cambios$M_F  <- plyr::mapvalues( df_cambios$M_F , from = c("TRUE", "FALSE"), to = c("FRANQUICIA", "MARCA"), warn_missing = F) 
+
+# Miramos a ver que este todo correcto
+df_cambios %>% view()
+
+
+
+
 # HTTPS GITHUB ------------------------------------------------------------
 
 # https://github.com/RaduScrobota/LPE21937899.git
+
 
 
 # READING AND WRITTING (FILES ) -------------------------------------------
